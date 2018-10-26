@@ -13,9 +13,8 @@ public class ConfigApp {
     
     private static String consumerKey;
     private static String consumerSecret;
-    private static String consumerToken;
-    private static String consumerTokenSecret;
-    private static String tweetDummy;
+    private static String AccessToken;
+    private static String AccessTokenSecret;
 
     public static String getConsumerKey() {
         return consumerKey;
@@ -33,20 +32,20 @@ public class ConfigApp {
         ConfigApp.consumerSecret = consumerSecret;
     }
 
-    public static String getConsumerToken() {
-        return consumerToken;
+    public static String getAccessToken() {
+        return AccessToken;
     }
 
-    public static void setConsumerToken(String consumerToken) {
-        ConfigApp.consumerToken = consumerToken;
+    public static void setAccessToken(String AccessToken) {
+        ConfigApp.AccessToken = AccessToken;
     }
 
-    public static String getConsumerTokenSecret() {
-        return consumerTokenSecret;
+    public static String getAccessTokenSecret() {
+        return AccessTokenSecret;
     }
 
-    public static void setConsumerTokenSecret(String consumerTokenSecret) {
-        ConfigApp.consumerTokenSecret = consumerTokenSecret;
+    public static void setAccessTokenSecret(String AccessTokenSecret) {
+        ConfigApp.AccessTokenSecret = AccessTokenSecret;
     }
 
     public static String getTweetDummy() {
@@ -56,6 +55,9 @@ public class ConfigApp {
     public static void setTweetDummy(String tweetDummy) {
         ConfigApp.tweetDummy = tweetDummy;
     }
+    private static String tweetDummy;
+
+    
     
     
     

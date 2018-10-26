@@ -5,7 +5,13 @@
  */
 package appFrm;
 
+import appConfig.GetTweet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
+import testskripsi.TestSkripsi;
+import twitter4j.TwitterException;
 
 /**
  *
@@ -19,10 +25,13 @@ public class MainView extends javax.swing.JFrame {
     public MainView() {
         initComponents();
         
+        TestSkripsi configApp = new TestSkripsi();
         setExtendedState(JFrame.MAXIMIZED_HORIZ);
         setVisible(true);
         setResizable(false);
-        
+    }
+    
+    public void getTweet() {
         
     }
 
@@ -300,7 +309,7 @@ public class MainView extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
-        
+        TestSkripsi configApp = new TestSkripsi();
         // remove panel
         mainPanel.removeAll();
         mainPanel.repaint();
@@ -310,6 +319,16 @@ public class MainView extends javax.swing.JFrame {
         mainPanel.add(streamPanel);
         mainPanel.repaint();
         mainPanel.revalidate();
+        
+        GetTweet streamTweet = new GetTweet();
+        try {
+            streamTweet.streamTwitter();
+        } catch (TwitterException ex) {
+            Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed

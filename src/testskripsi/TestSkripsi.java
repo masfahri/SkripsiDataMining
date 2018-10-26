@@ -5,6 +5,8 @@
  */
 package testskripsi;
 
+import appConfig.ConfigApp;
+import appFrm.MainView;
 import java.util.List;
 import twitter4j.GeoLocation;
 import twitter4j.Query;
@@ -27,30 +29,30 @@ public class TestSkripsi {
     public static void main(String[] args) throws TwitterException {
         // Configuration
         ConfigurationBuilder cb =  new ConfigurationBuilder();
-        cb.setDebugEnabled(true)
-                .setOAuthConsumerKey("fiZtq8TJTHng1UUuWPCfivK08")
-                .setOAuthConsumerSecret("SUrht0tOeMxk68xTQva9zgUSBgSLaZZXhRxnQv2BtoWg805wPB")
-                .setOAuthAccessToken("968645356543082496-wwCcZ4lGTVYbAP2rVWB1d5RAI2iFl4k")
-                .setOAuthAccessTokenSecret("jy8PCnpJgd1jMtrbAU5WMHwzww1hBjQixKHlcdz4hNBob");
-        Double lat = -6.178306;
-        Double lng = 106.631889;
-        TwitterFactory tf = new TwitterFactory(cb.build());
-        twitter4j.Twitter twitter = tf.getInstance();
-        Query query = new Query("Persija");
+        ConfigApp.setConsumerKey("fiZtq8TJTHng1UUuWPCfivK08");
+        ConfigApp.setConsumerSecret("SUrht0tOeMxk68xTQva9zgUSBgSLaZZXhRxnQv2BtoWg805wPB");
+        ConfigApp.setAccessToken("968645356543082496-wwCcZ4lGTVYbAP2rVWB1d5RAI2iFl4k");
+        ConfigApp.setAccessTokenSecret("jy8PCnpJgd1jMtrbAU5WMHwzww1hBjQixKHlcdz4hNBob");
         
-        QueryResult result = twitter.search(query);
-
-//Get Tweets        
-        for(Status st : result.getTweets()) {
-            System.out.println("Username: "+st.getUser().getScreenName()+"\n");
-            System.out.println("Name: "+st.getUser().getName()+"\n");
-            System.out.println("Tweet: "+st.getText()+"\n");
-            System.out.println("Tanggal Tweet: "+st.getCreatedAt()+"\n");
-            System.out.println("Location Tweet: "+st.getUser().getLocation()+"\n");
-            System.out.println("Language Tweet: "+st.getLang()+"\n");
-            System.out.println("================================");
-            
-//            String sql = "INSERT into "
-        }
+        new MainView().setVisible(true);
+        
+//        TwitterFactory tf = new TwitterFactory(cb.build());
+//        twitter4j.Twitter twitter = tf.getInstance();
+//        Query query = new Query("Persija");
+//        
+//        QueryResult result = twitter.search(query);
+//
+////Get Tweets        
+//        for(Status st : result.getTweets()) {
+//            System.out.println("Username: "+st.getUser().getScreenName()+"\n");
+//            System.out.println("Name: "+st.getUser().getName()+"\n");
+//            System.out.println("Tweet: "+st.getText()+"\n");
+//            System.out.println("Tanggal Tweet: "+st.getCreatedAt()+"\n");
+//            System.out.println("Location Tweet: "+st.getUser().getLocation()+"\n");
+//            System.out.println("Language Tweet: "+st.getLang()+"\n");
+//            System.out.println("================================");
+//            
+////            String sql = "INSERT into "
+//        }
     }
 }
