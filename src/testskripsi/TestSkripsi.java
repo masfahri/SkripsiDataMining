@@ -36,10 +36,7 @@ public class TestSkripsi {
     public static void main(String[] args) throws TwitterException {
         // Configuration
         ConfigurationBuilder cb =  new ConfigurationBuilder();
-        ConfigApp.setConsumerKey("vKMZVXjeKZvUJ7IG1Yb4zpIT4");
-        ConfigApp.setConsumerSecret("Rb6154GRKY3ykCykWEUPJtudBNRuju16lcgkNNKsAa3r6o6G31");
-        ConfigApp.setAccessToken("968038509201186817-R1xD1TTUOZyZo3BP1ZmrHfErdprbQIX");
-        ConfigApp.setAccessTokenSecret("Ja6r3gBsiu1GHlAHCF0ia9GQbvb3zTH5XDbz70eOh9Vp8");
+
         
         try {
             String url = "jdbc:mysql://localhost/skripskuy";
