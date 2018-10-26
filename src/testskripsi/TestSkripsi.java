@@ -7,6 +7,10 @@ package testskripsi;
 
 import appConfig.ConfigApp;
 import appFrm.MainView;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import twitter4j.GeoLocation;
 import twitter4j.Query;
@@ -21,6 +25,9 @@ import twitter4j.conf.ConfigurationBuilder;
  * @author sayam
  */
 public class TestSkripsi {
+    
+    public static Connection conn;
+    public static Statement stmt;
 
     /**
      * @param args the command line arguments
@@ -29,30 +36,24 @@ public class TestSkripsi {
     public static void main(String[] args) throws TwitterException {
         // Configuration
         ConfigurationBuilder cb =  new ConfigurationBuilder();
-        ConfigApp.setConsumerKey("fiZtq8TJTHng1UUuWPCfivK08");
-        ConfigApp.setConsumerSecret("SUrht0tOeMxk68xTQva9zgUSBgSLaZZXhRxnQv2BtoWg805wPB");
-        ConfigApp.setAccessToken("968645356543082496-wwCcZ4lGTVYbAP2rVWB1d5RAI2iFl4k");
-        ConfigApp.setAccessTokenSecret("jy8PCnpJgd1jMtrbAU5WMHwzww1hBjQixKHlcdz4hNBob");
+        ConfigApp.setConsumerKey("vKMZVXjeKZvUJ7IG1Yb4zpIT4");
+        ConfigApp.setConsumerSecret("Rb6154GRKY3ykCykWEUPJtudBNRuju16lcgkNNKsAa3r6o6G31");
+        ConfigApp.setAccessToken("968038509201186817-R1xD1TTUOZyZo3BP1ZmrHfErdprbQIX");
+        ConfigApp.setAccessTokenSecret("Ja6r3gBsiu1GHlAHCF0ia9GQbvb3zTH5XDbz70eOh9Vp8");
+        
+        try {
+            String url = "jdbc:mysql://localhost/skripskuy";
+            String user = "root";
+            String pass = "";
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection(url, user, pass);
+            stmt = (Statement) conn.createStatement();
+            System.out.println("Success");      
+        } catch (ClassNotFoundException | SQLException e) {
+            System.err.println("Fail Connection "+e.getMessage());
+        }
         
         new MainView().setVisible(true);
         
-//        TwitterFactory tf = new TwitterFactory(cb.build());
-//        twitter4j.Twitter twitter = tf.getInstance();
-//        Query query = new Query("Persija");
-//        
-//        QueryResult result = twitter.search(query);
-//
-////Get Tweets        
-//        for(Status st : result.getTweets()) {
-//            System.out.println("Username: "+st.getUser().getScreenName()+"\n");
-//            System.out.println("Name: "+st.getUser().getName()+"\n");
-//            System.out.println("Tweet: "+st.getText()+"\n");
-//            System.out.println("Tanggal Tweet: "+st.getCreatedAt()+"\n");
-//            System.out.println("Location Tweet: "+st.getUser().getLocation()+"\n");
-//            System.out.println("Language Tweet: "+st.getLang()+"\n");
-//            System.out.println("================================");
-//            
-////            String sql = "INSERT into "
-//        }
     }
 }

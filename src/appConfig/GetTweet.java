@@ -6,7 +6,6 @@
 package appConfig;
 
 
-import static appConfig.Conn.conn;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -14,12 +13,14 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static testskripsi.TestSkripsi.conn;
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
 import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
@@ -31,7 +32,7 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public class GetTweet {
     
-    private StatusListener statusLister;
+    private StatusListener statusListener;
     private TwitterStream twitterStream;
     private ConfigurationBuilder configBuilder;
     private String clearStatus;
@@ -57,7 +58,7 @@ public class GetTweet {
                 .setJSONStoreEnabled(true);
         
         // Twitter Listener
-        StatusListener statusListener = new StatusListener() {
+         statusListener = new StatusListener() {
             @Override
             public void onStatus(Status status) {
                 try {
@@ -69,10 +70,18 @@ public class GetTweet {
                     System.out.println("Language Tweet: "+status.getLang()+"\n");
                     System.out.println("================================");
                     
-                    
-                    Thread.sleep(20000);
+                    Statement stmt = conn.createStatement();
+                    stmt.executeUpdate("INSERT into tweet (id, username, nama, tweet, tgl_tweet, location_tweet, language_tweet) VALUES ('" 
+                            + status.getId() + "','" 
+                            + status.getUser().getScreenName() + "','" 
+                            + status.getUser().getName() + "','" 
+                            + status.getText() + "','" 
+                            + status.getCreatedAt() + "','" 
+                            + status.getUser().getLocation() + "','" 
+                            + status.getLang() + "')");
+//                    Thread.sleep(20000);
                     //To change body of generated methods, choose Tools | Templates.
-                } catch (InterruptedException ex) {
+                } catch (SQLException ex) {
                     Logger.getLogger(GetTweet.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -99,7 +108,14 @@ public class GetTweet {
 
             @Override
             public void onException(Exception excptn) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                try {
+                    restartStream();
+                } catch (TwitterException ex) {
+                    Logger.getLogger(GetTweet.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(GetTweet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
         };
         
@@ -108,11 +124,22 @@ public class GetTweet {
 
         twitterStream = new TwitterStreamFactory(configBuilder.build()).getInstance();
         twitterStream.addListener(statusListener);
-        twitterStream.filter(fq);
-        
-        
-        
+        twitterStream.filter(fq);  
                 
+    }
+    
+        public void stopStream() {
+
+        twitterStream.removeListener(statusListener);
+        twitterStream.shutdown();
+
+        twitterStream = null;
+        // end if
+    } // end stopStream
+
+    public void restartStream() throws TwitterException, SQLException {
+        stopStream();
+        streamTwitter();
     }
     
 }
