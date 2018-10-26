@@ -11,7 +11,7 @@ import java.sql.DriverManager;
 
 /**
  *
- * @author sayam
+ * @author sayamasfahri
  */
 public class Conn {
     public static Connection conn;
