@@ -6,6 +6,7 @@
 package appConfig;
 
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 import static testskripsi.TestSkripsi.conn;
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
@@ -71,7 +73,7 @@ public class GetTweet {
                     System.out.println("================================");
                     
                     Statement stmt = conn.createStatement();
-                    stmt.executeUpdate("INSERT into tweet (id, username, nama, tweet, tgl_tweet, location_tweet, language_tweet) VALUES ('" 
+                    stmt.executeUpdate("INSERT into tweet (id_user, username, nama, tweet, tgl_tweet, location_tweet, language_tweet) VALUES ('" 
                             + status.getId() + "','" 
                             + status.getUser().getScreenName() + "','" 
                             + status.getUser().getName() + "','" 
@@ -79,9 +81,9 @@ public class GetTweet {
                             + status.getCreatedAt() + "','" 
                             + status.getUser().getLocation() + "','" 
                             + status.getLang() + "')");
-//                    Thread.sleep(20000);
+                    Thread.sleep(20000);
                     //To change body of generated methods, choose Tools | Templates.
-                } catch (SQLException ex) {
+                } catch (SQLException | InterruptedException ex) {
                     Logger.getLogger(GetTweet.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -110,9 +112,7 @@ public class GetTweet {
             public void onException(Exception excptn) {
                 try {
                     restartStream();
-                } catch (TwitterException ex) {
-                    Logger.getLogger(GetTweet.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (SQLException ex) {
+                } catch (TwitterException | SQLException ex) {
                     Logger.getLogger(GetTweet.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
@@ -121,21 +121,17 @@ public class GetTweet {
         
         FilterQuery fq = new FilterQuery();
         fq.track(keywords);
-
+        
         twitterStream = new TwitterStreamFactory(configBuilder.build()).getInstance();
         twitterStream.addListener(statusListener);
         twitterStream.filter(fq);  
-                
     }
     
-        public void stopStream() {
-
+    public void stopStream() {
         twitterStream.removeListener(statusListener);
         twitterStream.shutdown();
-
         twitterStream = null;
-        // end if
-    } // end stopStream
+    } 
 
     public void restartStream() throws TwitterException, SQLException {
         stopStream();

@@ -5,19 +5,46 @@
  */
 package appFrm;
 
-import appConfig.GetTweet;
+import appConfig.ConfigApp;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import testskripsi.TestSkripsi;
+import static testskripsi.TestSkripsi.conn;
+import twitter4j.FilterQuery;
+import twitter4j.StallWarning;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.StatusListener;
 import twitter4j.TwitterException;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  *
  * @author sayam
  */
 public class MainView extends javax.swing.JFrame {
+    
+    private StatusListener statusListener;
+    private TwitterStream twitterStream;
+    private ConfigurationBuilder configBuilder;
+    private String clearStatus;
+    
+    private final String[] keywords = {
+        "jokowi", 
+        "maaruf amin", 
+        "jokowi maaruf amin",
+        "prabowo", 
+        "sandiaga", 
+        "prabowo sandi"
+    };
 
     /**
      * Creates new form MainView
@@ -31,8 +58,95 @@ public class MainView extends javax.swing.JFrame {
         setResizable(false);
     }
     
-    public void getTweet() {
+    public void streamTwitter() throws TwitterException, SQLException {
+
+    // twitter4j Config
+        configBuilder = new ConfigurationBuilder();
+        configBuilder.setDebugEnabled(true)
+                .setOAuthConsumerKey(ConfigApp.getConsumerKey())
+                .setOAuthConsumerSecret(ConfigApp.getConsumerSecret())
+                .setOAuthAccessToken(ConfigApp.getAccessToken())
+                .setOAuthAccessTokenSecret(ConfigApp.getAccessTokenSecret())
+                .setJSONStoreEnabled(true);
         
+        // Twitter Listener
+         statusListener = new StatusListener() {
+            @Override
+            public void onStatus(Status status) {
+                try {
+                    System.out.println("Username: "+status.getUser().getScreenName()+"\n");
+                    System.out.println("Name: "+status.getUser().getName()+"\n");
+                    System.out.println("Tweet: "+status.getText()+"\n");
+                    System.out.println("Tanggal Tweet: "+status.getCreatedAt()+"\n");
+                    System.out.println("Location Tweet: "+status.getUser().getLocation()+"\n");
+                    System.out.println("Language Tweet: "+status.getLang()+"\n");
+                    System.out.println("================================");
+                    
+                    Statement stmt = conn.createStatement();
+                    stmt.executeUpdate("INSERT into tweet (id_user, username, nama, tweet, tgl_tweet, location_tweet, language_tweet) VALUES ('" 
+                            + status.getId() + "','" 
+                            + status.getUser().getScreenName() + "','" 
+                            + status.getUser().getName() + "','" 
+                            + status.getText() + "','" 
+                            + status.getCreatedAt() + "','" 
+                            + status.getUser().getLocation() + "','" 
+                            + status.getLang() + "')");
+                    load_tweet();
+                    Thread.sleep(20000);
+                    //To change body of generated methods, choose Tools | Templates.
+                } catch (SQLException | InterruptedException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            @Override
+            public void onDeletionNotice(StatusDeletionNotice sdn) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onTrackLimitationNotice(int i) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onScrubGeo(long l, long l1) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onStallWarning(StallWarning sw) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onException(Exception excptn) {
+                try {
+                    restartStream();
+                } catch (TwitterException | SQLException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+        };
+        
+        FilterQuery fq = new FilterQuery();
+        fq.track(keywords);
+        
+        twitterStream = new TwitterStreamFactory(configBuilder.build()).getInstance();
+        twitterStream.addListener(statusListener);
+        twitterStream.filter(fq);  
+    }
+    
+    public void stopStream() {
+        twitterStream.removeListener(statusListener);
+        twitterStream.shutdown();
+        twitterStream = null;
+    } 
+
+    public void restartStream() throws TwitterException, SQLException {
+        stopStream();
+        streamTwitter();
     }
 
     /**
@@ -61,7 +175,7 @@ public class MainView extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         streamPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tweetTabel = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -227,7 +341,7 @@ public class MainView extends javax.swing.JFrame {
         streamPanel.setBackground(new java.awt.Color(29, 161, 242));
         streamPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tweetTabel.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -238,7 +352,7 @@ public class MainView extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tweetTabel);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -321,15 +435,14 @@ public class MainView extends javax.swing.JFrame {
         mainPanel.repaint();
         mainPanel.revalidate();
         
-        GetTweet streamTweet = new GetTweet();
         try {
-            streamTweet.streamTwitter();
+            streamTwitter();
+            load_tweet();
         } catch (TwitterException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
@@ -397,6 +510,37 @@ public class MainView extends javax.swing.JFrame {
             }
         });
     }
+    
+    public void load_tweet() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Nomor");
+        model.addColumn("Username");
+        model.addColumn("Tweet");
+        model.addColumn("Tanggal Tweet");
+        model.addColumn("Lokasi Tweet");
+        model.addColumn("Bahasa Tweet");
+        
+        try {
+            Statement stmt = conn.createStatement();
+            String qry = "SELECT * FROM tweet";
+            ResultSet rs = stmt.executeQuery(qry);
+            while(rs.next()){
+                model.addRow(new Object[]{
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getString(5),
+                    rs.getString(6),
+                    rs.getString(7),
+                    rs.getString(8)
+                    
+                });
+            }
+            tweetTabel.setModel(model);
+
+        }catch(Exception e){
+            
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bodyPanel;
@@ -413,10 +557,10 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JPanel menuPanel;
     private javax.swing.JPanel stopWords;
     private javax.swing.JPanel streamPanel;
+    public javax.swing.JTable tweetTabel;
     // End of variables declaration//GEN-END:variables
 }

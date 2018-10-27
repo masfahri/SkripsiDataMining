@@ -37,6 +37,7 @@ public class TestSkripsi {
         // Configuration
         ConfigurationBuilder cb =  new ConfigurationBuilder();
 
+
         
         try {
             String url = "jdbc:mysql://localhost/skripskuy";
