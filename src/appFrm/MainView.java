@@ -9,6 +9,7 @@ import appConfig.ConfigApp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -82,13 +83,16 @@ public class MainView extends javax.swing.JFrame {
                     System.out.println("Language Tweet: "+status.getLang()+"\n");
                     System.out.println("================================");
                     
+                    Date dtTweet = status.getCreatedAt();
+                    java.sql.Date dateTweet = new java.sql.Date(dtTweet.getTime());
+                    
                     Statement stmt = conn.createStatement();
-                    stmt.executeUpdate("INSERT into tweet (id_user, username, nama, tweet, tgl_tweet, location_tweet, language_tweet) VALUES ('" 
+                    stmt.executeUpdate("INSERT into tweet_dummy (id_user, username, nama, tweet, tgl_tweet, location_tweet, language_tweet) VALUES ('" 
                             + status.getId() + "','" 
                             + status.getUser().getScreenName() + "','" 
                             + status.getUser().getName() + "','" 
                             + status.getText() + "','" 
-                            + status.getCreatedAt() + "','" 
+                            + dateTweet + "','" 
                             + status.getUser().getLocation() + "','" 
                             + status.getLang() + "')");
                     load_tweet();
@@ -522,7 +526,7 @@ public class MainView extends javax.swing.JFrame {
         
         try {
             Statement stmt = conn.createStatement();
-            String qry = "SELECT * FROM tweet";
+            String qry = "SELECT * FROM tweet_dummy";
             ResultSet rs = stmt.executeQuery(qry);
             while(rs.next()){
                 model.addRow(new Object[]{

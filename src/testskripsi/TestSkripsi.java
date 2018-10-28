@@ -36,7 +36,7 @@ public class TestSkripsi {
     public static void main(String[] args) throws TwitterException {
         // Configuration
         ConfigurationBuilder cb =  new ConfigurationBuilder();
-
+        
 
         
         try {
